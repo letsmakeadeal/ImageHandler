@@ -29,7 +29,6 @@ class Server {
   boost::asio::ip::tcp::acceptor acceptor_;
   QMutex mutex_;
   QMutex mutex1_;
-  QMutex mutex2_;
   int server_port_;
   std::vector<std::string> ip_adresses_;
   int pictures_processed_;

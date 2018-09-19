@@ -1,9 +1,9 @@
 #pragma once
 #include <QMutex>
 #include <QString>
+#include <boost/thread.hpp>
 #include "MainWindow.h"
 #include "boost/asio.hpp"
-#include <boost/thread.hpp>
 
 class GUIUpdater;
 
@@ -13,14 +13,16 @@ class Server {
   void SetPort(const int port);
   void Run();
   ~Server();
+
  private:
-  void ProcessPicture();
+  void ProcessPicture(boost::asio::ip::tcp::socket sock);
   void IncrementProcessedPics();
   void PushAddressToProcessing(const boost::asio::ip::address);
   void PopAddressToProcessing(const boost::asio::ip::address);
-  void CalcAverageSpeed(const int pic_proc_time, const int receive_time, 
-  const int send_time);
+  void CalcAverageSpeed(const int pic_proc_time, const int receive_time,
+                        const int send_time);
   QString TransormFromVecToQStr();
+
  public:
   GUIUpdater* gui_;
   boost::asio::io_service io_service_;
@@ -34,6 +36,6 @@ class Server {
   float speed_summ_;
   float send_time_summ_;
   float receive_time_summ_;
-  std::vector<boost::thread> clients_;
+  std::vector<std::thread> clients_;
   bool running_flag_;
 };

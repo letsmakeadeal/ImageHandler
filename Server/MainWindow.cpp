@@ -4,31 +4,31 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QFuture>
+#include <QInputDialog>
 #include <QPalette>
 #include <QtConcurrent>
 #include <sstream>
-#include <QInputDialog>
 /* Main window implementation */
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), number_of_done_pics_(0) {
-  bool bOk; 
-     int port = QInputDialog::getInt(this, tr("Set server port"),
-                                 tr("Port"), 8031, 1024, 49151, 1, &bOk); 
-  if (!bOk) { 
+  bool bOk;
+  int port = QInputDialog::getInt(this, tr("Set server port"), tr("Port"), 8031,
+                                  1024, 49151, 1, &bOk);
+  if (!bOk) {
     exit(0);
-   }
-
+  }
   updater_ = new GUIUpdater(this);
-  updater_ -> GetServer() -> SetPort(port);
-  updater_ -> RunServer();
+  updater_->GetServer()->SetPort(port);
+  updater_->RunServer();
   std::ostringstream msg;
   msg << "Server is working on port  ";
-  msg << port ;
+  msg << port;
   port_messages_ = new QLabel(msg.str().c_str(), this);
   nDonePics_ = new QLabel("0 done pictures", this);
   sourcesLabel_ = new QLabel("Processing sources : ", this);
   sources_ = new QLabel("Sources", this);
-  avSpeedPicProcess_ = new QLabel("Average picture processing speed(msec): ", this);
+  avSpeedPicProcess_ =
+      new QLabel("Average picture processing speed(msec): ", this);
   netAvReceiveSpeed_ = new QLabel("Average receiving speed(msec): ", this);
   netAvSendSpeed_ = new QLabel("Average sending speed(msec): ", this);
 
@@ -37,12 +37,12 @@ MainWindow::MainWindow(QWidget *parent)
   sourcesLabel_->setPalette(sample_palette);
   nDonePics_->setPalette(sample_palette);
   sample_palette.setColor(QPalette::WindowText, Qt::red);
-  port_messages_ -> setPalette(sample_palette);
+  port_messages_->setPalette(sample_palette);
 
   QWidget *centralArea = new QWidget(this);
   this->setCentralWidget(centralArea);
   layout_ = new QVBoxLayout(this);
-  
+
   layout_->addWidget(port_messages_);
   layout_->addWidget(nDonePics_);
   layout_->addWidget(sourcesLabel_);
@@ -84,7 +84,8 @@ void MainWindow::UpdateAverageSendSpeed(const QString &string) {
   netAvSendSpeed_->setText(string);
 };
 
-MainWindow::~MainWindow(){
+MainWindow::~MainWindow() {
+  delete port_messages_;
   delete nDonePics_;
   delete sourcesLabel_;
   delete avSpeedPicProcess_;
@@ -103,7 +104,7 @@ GUIUpdater::GUIUpdater(QObject *parent) : QObject(parent) {
 
 void GUIUpdater::RunServer() { QtConcurrent::run(server_, &Server::Run); }
 
-Server * GUIUpdater::GetServer() { return server_;}
+Server *GUIUpdater::GetServer() { return server_; }
 
 void GUIUpdater::IncrementProcessedPics(const QString &num) {
   emit RequestChangeLabel(num);
